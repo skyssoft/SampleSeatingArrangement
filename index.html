@@ -7,7 +7,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
-    <!-- Dynamic Style Block to Inject Chosen Print Orientation -->
     <style id="dynamicPrintOrientation"></style>
 
     <style>
@@ -68,7 +67,6 @@
             border-collapse: collapse; 
             table-layout: fixed; 
             background: #fff; 
-            
         }
         .master-table th{ 
             border: 1px solid #000; 
@@ -80,7 +78,7 @@
         }
         .master-table td { 
             border: 1px solid #000; 
-            padding: 1px 1px; 
+            padding: 4px 6px; 
             text-align: left; 
             font-weight: 600; 
             font-size: 11px;
@@ -91,21 +89,53 @@
         }
 
         /* Specific Column Widths */
-        .col-hall { width: 4%; text-align: center; }        
-        .col-paper { width: 26%; }      
+        .col-hall { width: 6%; text-align: center; }        
+        .col-paper { width: 24%; }      
         .col-regs-master { width: 42%}
-        .col-str { width: 5%; }         
+        .col-str { width: 5%; }          
         .col-inv { width: 13%; }        
         .col-sign { width: 10%; }       
         
         .dotted-line { border-bottom: 1.5px dotted #000; height: 18px; width: 80%; margin: 0 auto; }
 
-        /* Sticker Styles */
-        .sticker-grid { display: grid; grid-template-columns: repeat(5, 1fr); grid-auto-rows: 22.84mm; width: 215mm; margin: 0 auto; background: #fff; }
-        .sticker { display: flex; align-items: center; justify-content: center; font-family: 'Calibri', sans-serif; font-size: 20px; font-weight: 900; text-align: center; border: 0.1mm none #eee; overflow: hidden; }
-
-        .page-break { page-break-after: always; }
-
+        /* Sticker Sheet Container and Avery Style Setup */
+        .sticker-container {
+            width: 210mm; /* A4 standard baseline */
+            box-sizing: border-box;
+            page-break-after: always;
+            margin: 0 auto;
+        }
+        .sticker-grid { 
+            display: grid;
+            grid-template-columns: repeat(5, 40mm);
+            grid-template-rows: repeat(13, 21.2mm);
+            
+            /* Page margins (Avery standard layout rules) */
+            padding-top: 10.7mm;
+            padding-bottom: 10.7mm;
+            padding-left: 5mm;
+            padding-right: 5mm;
+            
+            gap: 0mm; 
+            box-sizing: border-box;
+            background: transparent;
+        }
+        .sticker { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-family: 'Calibri', sans-serif; 
+            font-size: 16px; 
+            font-weight: 900; 
+            text-align: center; 
+            color: #000;
+            background: #fff;
+            border: 0.25pt dashed #cbd5e1; /* Subtle boundary guideline */
+            box-sizing: border-box;
+            overflow: hidden; 
+            page-break-inside: avoid;
+        }
+    
         @media print {
             .no-print-area { display: none !important; }
             body { 
@@ -124,6 +154,16 @@
             .master-table tr {
                 page-break-inside: avoid;
                 page-break-after: auto;
+            }
+            .sticker-container {
+                page-break-after: always;
+            }
+            .sticker-container:last-child {
+                page-break-after: avoid;
+            }
+            /* Precision setup to eliminate background margin shifting across dynamic prints */
+            @page {
+                margin: 0 !important;
             }
         }
 
@@ -185,7 +225,6 @@
             </div>
         </div>
 
-        <!-- Custom Capacity Management Board Container Box -->
         <div id="capacityConfigBoard" class="capacity-config-board" style="display: none;">
             <label style="color: var(--primary); font-size: 14px;">Class Strength</label> 
             <div id="capacityGrid" class="capacity-grid"></div>
@@ -199,7 +238,6 @@
             <button style="background: #0891b2; color: white; border: none; font-weight: bold; cursor: pointer;" onclick="process('summary')">Hall Summary</button>
         </div>
         
-        <!-- Print Trigger and Page Orientation Selector -->
         <div id="printControlGroup" class="print-control-group">
             <div style="display: flex; flex-direction: column;">
                 <label for="pdfOrientation">PDF Orientation:</label>
@@ -455,9 +493,7 @@ function renderHallCard(chunk, num, date) {
         </div>
         
         <div class="class-header">
-            
             <div class="header-main"><b>Hall No. ${num}</b> <b style="margin-left:15px;">Room: ____</b> <b style="margin-left:15px;">${date}</b> <b>&emsp;(${examName})</b></div>
-            
             <b>Str: ${chunk.length}</b>
         </div>
         <div class="card-body">${bodyHtml}</div>`;
@@ -570,7 +606,6 @@ function formatRangesForMaster(ids) {
     let currentPrefix = "";
     return ranges.map(r => {
         let displayStr = "";
-        // If the prefix changes or is completely new, print it
         if (r.start.prefix !== currentPrefix) {
             displayStr += r.start.prefix;
             currentPrefix = r.start.prefix;
@@ -587,18 +622,30 @@ function formatRangesForMaster(ids) {
 
 function renderStickers(list) {
     const output = document.getElementById('dynamicOutput');
-    const grid = document.createElement('div');
-    grid.className = 'sticker-grid';
-    list.forEach(item => {
-        const s = document.createElement('div');
-        s.className = 'sticker';
-        s.innerText = String(item.id).trim();
-        grid.appendChild(s);
-    });
-    output.appendChild(grid);
+    output.innerHTML = ''; 
+
+    const stickersPerPage = 65; // Matches 5 columns x 13 rows layout requirement cleanly
+    for (let i = 0; i < list.length; i += stickersPerPage) {
+        const pageChunk = list.slice(i, i + stickersPerPage);
+        
+        const container = document.createElement('div');
+        container.className = 'sticker-container';
+        
+        const grid = document.createElement('div');
+        grid.className = 'sticker-grid';
+        
+        pageChunk.forEach(item => {
+            const s = document.createElement('div');
+            s.className = 'sticker';
+            s.innerText = String(item.id).trim();
+            grid.appendChild(s);
+        });
+        
+        container.appendChild(grid);
+        output.appendChild(container);
+    }
 }
 
-// Injects custom CSS rules into print engine layout matching selection setup
 function downloadPDF() {
     const chosenOrientation = document.getElementById('pdfOrientation').value;
     const styleElement = document.getElementById('dynamicPrintOrientation');
@@ -606,10 +653,9 @@ function downloadPDF() {
     if (chosenOrientation === 'landscape') {
         styleElement.innerHTML = `@media print { @page { size: A4 landscape; margin: 10mm; } .master-table { width: 100% !important; } }`;
     } else {
-        styleElement.innerHTML = `@media print { @page { size: A4 portrait; margin: 10mm; } }`;
+        styleElement.innerHTML = `@media print { @page { size: A4 portrait; margin: 0mm; } }`;
     }
 
-    // Execute standard native system print dialog securely
     window.print();
 }
 </script>
