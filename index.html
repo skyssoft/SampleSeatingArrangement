@@ -246,7 +246,7 @@
                     <option value="landscape">Landscape (A4 Horizontal)</option>
                 </select>
             </div>
-            <button id="pdfBtn" onclick="downloadPDF()">Print / Save PDF</button>
+            <button id="pdfBtn" onclick="contactMessage()">Print / Save PDF</button>
         </div>
     </div>
 
@@ -644,6 +644,9 @@ function renderStickers(list) {
         container.appendChild(grid);
         output.appendChild(container);
     }
+}
+    function contactMessage() {
+    alert("Please contact 9526455151");
 }
 
 function downloadPDF() {
