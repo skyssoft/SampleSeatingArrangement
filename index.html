@@ -643,10 +643,10 @@ function renderHallCard(chunk, num, date) {
             if (pref === "NoPrefix") {
                 cleanRangeSegments.push(joinedNumbers);
             } else {
-                cleanRangeSegments.push(`<span>${pref}</span>: ${joinedNumbers}`);
+                cleanRangeSegments.push(`<span>${pref}</span>${joinedNumbers}`);
             }
         }
-        let rText = cleanRangeSegments.join(' ; ');
+        let rText = cleanRangeSegments.join(', ');
         
         bodyHtml += `
             <div style="margin-bottom: 12px;">
