@@ -249,10 +249,87 @@
                 margin: 0 !important;
             }
         }
+               .useful-links-box{
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    width: 200px;
+    background: white;
+    border: 2px solid #550649;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    z-index: 9999;
+    overflow: hidden;
+}
+
+.useful-links-header{
+    background: #2226fa;
+    color: white;
+    border-radius: 3px;
+    padding: 6px;
+    font-weight: bold;
+    text-align: center;
+    font-size: 14px;
+}
+
+.useful-links-body{
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.useful-link-btn{
+    display: block;
+    text-decoration: none;
+    background: #087931;
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.useful-link-btn:hover{
+    background: #05491f;
+}
     </style>
 </head>
 <body>
 
+<div class="useful-links-box no-print-area">
+
+    <div class="useful-links-header">
+        Useful Links
+    </div>
+
+    <div class="useful-links-body">
+
+        <a 
+            class="useful-link-btn"
+            href="https://skyssoft.github.io/dummyTCform/"
+            target="_blank"
+        >
+            📄 Easy TC Printing
+        </a>
+
+    </div>
+    <div class="useful-links-body">
+
+        <a 
+            class="useful-link-btn"
+            href="https://skyssoft.github.io/voucherPrint/samplevoucher"
+            target="_blank"
+            
+        >
+            📄 Voucher Print
+        </a>
+
+    </div>
+
+
+</div>
     <div class="no-print-area">
         <h1 style="margin: 0 0 5px 0; text-align: center; color: #2563eb; ">Sample Arts & Science College</h1>
         <h2 style="margin: 0 0 20px 0; text-align: center;">Examination Seating Arrangement</h2>
