@@ -757,4 +757,592 @@ function renderHallCard(chunk, num, date) {
                 cleanRangeSegments.push(`<span>${pref}</span>${joinedNumbers}`);
             }
         }
-        let rText = cleanRangeSegment
+        let rText = cleanRangeSegments.join(', ');
+        
+        bodyHtml += `
+            <div style="margin-bottom: 12px;">
+                <div class="paper-label">${g.paper} <span style="font-size:12px; text-decoration: none; font-weight:bold">&nbsp;&nbsp;&nbsp;(Count: ${g.count})</span></div>
+                <div class="range-numbers">${rText}</div>
+            </div>`;
+    });
+
+    // Get current room name or default to blank dashes if empty
+    let currentRoomName = roomNamesMap[num] || "";
+    let roomDisplayLabel = currentRoomName ? currentRoomName : "________";
+
+    // Build the side control layout with the Room Text Input Box
+    let editorConfigRow = hallDistributionOverrides[num - 1] || {};
+    let sideEditorHtml = `
+        <div class="side-roomeditor no-print-area">
+            <div class="room-edit-row">
+                <label style="font-size:11px; margin-bottom:2px;">Assign Room Name:</label>
+                <input type="text" 
+                       class="room-input-edit" 
+                       placeholder="e.g. Seminar Hall, Room 12" 
+                       value="${currentRoomName}" 
+                       oninput="handleRoomNameChange(${num}, this.value)">
+            </div>
+        </div>
+        <div class="side-editor no-print-area">
+            
+            <strong>Class Papers Mix</strong>`;
+    
+    globalPaperOrder.forEach(pName => {
+        let currentAssignedCount = editorConfigRow[pName] || 0;
+        sideEditorHtml += `
+            <div class="paper-control-row">
+                <span title="${pName}">${pName}</span>
+                <input type="number" 
+                       class="paper-input-edit" 
+                       min="0" 
+                       value="${currentAssignedCount}" 
+                       onchange="handleDirectInputChange(${num}, '${pName.replace(/'/g, "\\'")}', this.value)">
+            </div>`;
+    });
+    sideEditorHtml += `</div>`;
+
+    const card = document.createElement('div');
+    card.className = 'class-card';
+    card.style.position = 'relative';
+    
+    card.innerHTML = `
+        ${sideEditorHtml}
+        <div class="class-header">
+            <div class="header-main">
+                <b>Hall No. ${num}</b> 
+                <b style="margin-left:15px;">Room: <span style="text-decoration: underline;">${roomDisplayLabel}</span></b> 
+                <b style="margin-left:15px;">${date}</b> 
+                <b>&emsp;(${examName})</b>
+            </div>
+            <b>Total Str: ${chunk.length}</b>
+        </div>
+        <h3 style="text-align:center; margin-top: 1px; margin-bottom:1px;">..........Contact to remove this Message(Ph: 9526455151).........</h3>
+        <p style="text-align:center; margin-top: 1px; margin-bottom:1px;">One time payment of Rs.1000/- for unlimited validity</p>
+        <div class="card-body">${bodyHtml}</div>`;
+        
+    output.appendChild(card);
+}
+function handleRoomNameChange(hallIndex, typedName) {
+    // Store the text value mapping matching the Hall Index key
+    roomNamesMap[hallIndex] = typedName.trim();
+    
+    // Dynamically update the header element label on screen without reloading the side panel inputs
+    const cardElements = document.getElementById('dynamicOutput').getElementsByClassName('class-card');
+    if(cardElements[hallIndex - 1]) {
+        const roomLabelSpan = cardElements[hallIndex - 1].querySelector('.header-main b:nth-child(2) span');
+        if(roomLabelSpan) {
+            roomLabelSpan.innerText = typedName.trim() ? typedName.trim() : "________";
+        }
+    }
+}
+
+function handleDirectInputChange(hallIndex, paperName, typedValue) {
+    let targetValue = parseInt(typedValue);
+    if (isNaN(targetValue) || targetValue < 0) targetValue = 0;
+
+    let configRow = hallDistributionOverrides[hallIndex - 1];
+    if (!configRow) return;
+
+    let currentVal = configRow[paperName] || 0;
+    let difference = targetValue - currentVal;
+
+    if (difference !== 0) {
+        adjustPaperInHall(hallIndex, paperName, difference);
+    }
+}
+
+function adjustPaperInHall(hallIndex, paperName, delta) {
+    let configRow = hallDistributionOverrides[hallIndex - 1];
+    if (!configRow) return;
+
+    let currentVal = configRow[paperName] || 0;
+    let newVal = currentVal + delta;
+    if (newVal < 0) newVal = 0;
+
+    if (delta > 0) {
+        // --- HANDLE INCREMENT (+) ---
+        let totalAssignedUpstream = 0;
+        for (let i = 0; i < hallIndex - 1; i++) {
+            totalAssignedUpstream += (hallDistributionOverrides[i][paperName] || 0);
+        }
+        let totalAvailableInMaster = papersMasterMap[paperName].length;
+        let leftInPool = totalAvailableInMaster - totalAssignedUpstream;
+        
+        // If they try to type a number greater than available students left
+        if (newVal > leftInPool) {
+            alert(`Cannot add more. Only ${leftInPool} total students exist for this paper.`);
+            return;
+        }
+        configRow[paperName] = newVal;
+
+    } else if (delta < 0) {
+        // --- HANDLE DECREMENT (-) ---
+        if (currentVal <= 0) return;
+        
+        // Apply the new value to the current hall
+        configRow[paperName] = newVal;
+
+        // Calculate exactly how many students were displaced by this change
+        let displacedCount = Math.abs(delta);
+
+        // Push the entire bulk of displaced students into the subsequent halls
+        let nextHallIndex = hallIndex; // This points to hallDistributionOverrides[nextHallIndex] (the next room)
+        
+        if (nextHallIndex < hallDistributionOverrides.length) {
+            let nextHall = hallDistributionOverrides[nextHallIndex];
+            nextHall[paperName] = (nextHall[paperName] || 0) + displacedCount;
+        } else {
+            // If no next hall exists, create a brand new hall for the full displaced bulk
+            let newHall = {};
+            globalPaperOrder.forEach(p => { newHall[p] = 0; });
+            newHall[paperName] = displacedCount;
+            hallDistributionOverrides.push(newHall);
+        }
+    }
+
+    // Recalculate allocation balances and re-render user display
+    calculateHallsDistributionMatrix();
+    renderOutput('cards');
+}
+
+function renderMasterTable() {
+    const examName = document.getElementById('examName').value;
+    const examScheme = document.getElementById('examScheme').value;
+    const examSession = document.getElementById('examSession').value;
+    const examYear = document.getElementById('examYear').value;
+    const output = document.getElementById('dynamicOutput');
+    
+    const header = `
+        <div style="text-align:center; margin-bottom:15px;">
+            <h4 style="text-transform:uppercase; margin-bottom: 1px;">Sample Arts & Science College</h4>
+            <h3 style="text-transform:uppercase; margin-top: 1px; margin-bottom:1px;">${examName} ${examScheme} Examination ${examSession} ${examYear}</h3>
+            <h4 style="margin-top: 1px; margin-bottom:1px;">Date & Time: ${processedHallsData[0]?.[0]?.dateTime || ''}</h4>
+        </div>
+        <table class="master-table">
+            <thead>
+                <tr>
+                    <th class="col-hall">Hall</th>
+                    <th class="col-paper">Subject</th>
+                    <th class="col-regs-master">Register Numbers</th>
+                    <th class="col-str">Str</th>
+                    <th class="col-inv">Invigilator</th>
+                    <th class="col-sign">Sign</th>
+                </tr>
+            </thead>
+            <tbody>`;
+    
+    let rows = "";
+    
+    processedHallsData.forEach((chunk, hIdx) => {
+        if (chunk.length === 0) return;
+        
+        let sortedChunk = [...chunk].sort((a, b) => {
+            let idxA = globalPaperOrder.indexOf(a.paper);
+            let idxB = globalPaperOrder.indexOf(b.paper);
+            if(idxA !== idxB) return idxA - idxB;
+            let pa = parseId(a.id), pb = parseId(b.id);
+            if (pa.prefix !== pb.prefix) return pa.prefix.localeCompare(pb.prefix);
+            return (pa.val || 0) - (pb.val || 0);
+        });
+
+        let subGroups = [];
+        sortedChunk.forEach(item => {
+            if (subGroups.length === 0 || subGroups[subGroups.length-1].paper !== item.paper) {
+                subGroups.push({ paper: item.paper, ids: [item.id] });
+            } else {
+                subGroups[subGroups.length-1].ids.push(item.id);
+            }
+        });
+
+        subGroups.forEach((g, gIdx) => {
+            rows += `<tr>
+                ${gIdx === 0 ? `<td rowspan="${subGroups.length}" style="text-align:center; font-weight:bold; font-size:13px;">${hIdx+1}</td>` : ''}
+                <td style="font-size:11px">${g.paper}</td>
+                <td>${formatRangesForMaster(g.ids)}</td>
+                ${gIdx === 0 ? `<td rowspan="${subGroups.length}" style="text-align:center; font-weight:bold; font-size:13px;">${chunk.length}</td><td rowspan="${subGroups.length}"><div class="dotted-line"></div></td><td rowspan="${subGroups.length}"><div class="dotted-line"></div></td>` : ''}
+            </tr>`;
+        });
+    });
+    
+    output.innerHTML = header + rows + `</tbody></table>`;
+}
+
+function renderSummaryTable() {
+    const examName = document.getElementById('examName').value;
+    const examScheme = document.getElementById('examScheme').value;
+    const examSession = document.getElementById('examSession').value;
+    const examYear = document.getElementById('examYear').value;
+    const output = document.getElementById('dynamicOutput');
+    
+    const header = `
+        <div style="text-align:center; margin-bottom:15px;">
+            <h3 style="text-transform:uppercase; margin-bottom:1px;">${examName} ${examScheme} Examination ${examSession} ${examYear}</h3>
+            <h3 style="text-transform:uppercase; margin-top:1px; margin-bottom:1px;">Hall Summary</h3>
+            <h4>Date & Time: ${processedHallsData[0]?.[0]?.dateTime || ''}</h4>
+        </div>
+        <table class="master-table" style="max-width:850px; margin: 0 auto;">
+            <thead>
+                <tr>
+                    <th style="width:15%">Hall No.</th>
+                    <th style="width:70%">Register Numbers Mixed Breakdown</th>
+                    <th style="width:15%">Total Str</th>
+                </tr>
+            </thead>
+            <tbody>`;
+            
+    let rows = "";
+
+    processedHallsData.forEach((chunk, index) => {
+        if (chunk.length === 0) return;
+        
+        let sortedChunk = [...chunk].sort((a, b) => {
+            let idxA = globalPaperOrder.indexOf(a.paper);
+            let idxB = globalPaperOrder.indexOf(b.paper);
+            if(idxA !== idxB) return idxA - idxB;
+            let pa = parseId(a.id), pb = parseId(b.id);
+            if (pa.prefix !== pb.prefix) return pa.prefix.localeCompare(pb.prefix);
+            return (pa.val || 0) - (pb.val || 0);
+        });
+
+        let idsInHall = sortedChunk.map(item => item.id);
+        let formattedRanges = formatRangesForMaster(idsInHall);
+
+        rows += `<tr>
+            <td style="text-align:center; font-weight:bold; font-size:14px;"> ${index + 1}</td>
+            <td style="padding: 8px 12px; font-family: 'Calibri', monospace; font-size:13px; font-weight:bold; line-height:1.4;">${formattedRanges}</td>
+            <td style="text-align:center; font-weight:bold; font-size:16px;">${chunk.length}</td>
+        </tr>`;
+    });
+    
+    output.innerHTML = header + rows + `</tbody></table>`;
+}
+
+function renderAttendanceSheets() {
+
+    const output = document.getElementById('dynamicOutput');
+
+    const examName = document.getElementById('examName').value;
+    const examScheme = document.getElementById('examScheme').value;
+     const examSession = document.getElementById('examSession').value;
+    const examYear = document.getElementById('examYear').value;
+
+    output.innerHTML = '';
+
+    processedHallsData.forEach((chunk, hallIndex) => {
+
+        if(chunk.length === 0) return;
+
+        let grouped = {};
+
+        chunk.forEach(student => {
+
+            if(!grouped[student.paper]) {
+                grouped[student.paper] = [];
+            }
+
+            grouped[student.paper].push(student);
+        });
+
+        let roomName = roomNamesMap[hallIndex + 1] || "";
+
+        let html = `
+        <div style="
+            width:190mm;
+            min-height:267mm;
+            margin:0 auto 10mm;
+            background:white;
+            padding:8mm;
+           
+            box-sizing:border-box;
+            page-break-after:always;
+        ">
+
+            <div style="text-align:center;">
+                <h3 style="margin:0;">
+                    Sample Arts & Science College
+                </h3>
+
+                <h4 style="margin:4px 0;">
+                    ${examName} ${examScheme} Examination ${examSession} ${examYear}
+                </h4>
+            </div>
+
+            <table style="
+                width:100%;
+                border-collapse:collapse;
+                margin-top:8px;
+                font-size:13px;
+            ">
+                <tr>
+                    <td><b>Hall : ${hallIndex + 1}</b></td>
+                    <td><b>Room : ${roomName}</b></td>
+                </tr>
+
+                <tr>
+                    <td colspan="2">
+                        <b>Date & Time :</b> ${chunk[0].dateTime}
+                    </td>
+                </tr>
+            </table>
+
+            <table style="
+                width:100%;
+                border-collapse:collapse;
+                margin-top:12px;
+                font-size:11px;
+            ">
+                <thead>
+
+                    <tr>
+
+    <th style="border:1px solid #000;padding:6px;width:7%;">
+        Sl No
+    </th>
+
+    <th style="border:1px solid #000;padding:6px;width:20%;">
+        Register No
+    </th>
+
+    <th style="border:1px solid #000;padding:6px;width:33%;">
+        Name of Student
+    </th>
+
+    <th style="border:1px solid #000;padding:6px;width:15%;">
+        D.O.B
+    </th>
+
+    <th style="border:1px solid #000;padding:6px;width:12%;">
+        Signature
+    </th>
+
+    <th style="border:1px solid #000;padding:6px;width:13%;">
+        Remarks
+    </th>
+
+</tr>
+
+                </thead>
+
+                <tbody>
+        `;
+
+        let slno = 1;
+
+        Object.keys(grouped).forEach(paperName => {
+
+            html += `
+            <tr>
+                <td colspan="5" style="
+                    border:1px solid #000;
+                    padding:3px 6px;
+                    font-weight:bold;
+                    background:#f1f5f9;
+                    font-size:11px;
+                ">
+                    ${paperName}
+                </td>
+            </tr>
+            `;
+
+            grouped[paperName].forEach(stu => {
+
+                html += `
+                <tr>
+
+    <td style="
+        border:1px solid #000;
+        padding:2px 5px;
+        line-height:1.1;
+        text-align:center;
+    ">
+        ${slno++}
+    </td>
+
+    <td style="
+        border:1px solid #000;
+        padding:2px 5px;
+        line-height:1.1;
+    ">
+        ${stu.id}
+    </td>
+
+    <td style="
+        border:1px solid #000;
+        padding:2px 5px;
+        line-height:1.1;
+    ">
+        ${stu.name || ''}
+    </td>
+
+    <td style="
+        border:1px solid #000;
+        padding:2px 5px;
+        line-height:1.1;
+    ">
+        ${stu.dob || ''}
+    </td>
+
+    <td style="
+        border:1px solid #000;
+        padding:2px 5px;
+        height:18px;
+        line-height:1.1;
+    ">
+    </td>
+
+    <td style="
+        border:1px solid #000;
+        padding:2px 5px;
+        line-height:1.1;
+    ">
+    </td>
+
+</tr>
+                `;
+            });
+
+        });
+
+        html += `
+                </tbody>
+            </table>
+
+            <br>
+
+            <table style="
+                width:100%;
+                border-collapse:collapse;
+                font-size:12px;
+            ">
+
+                <tr>
+
+                    <td style="padding:5px;">
+                        <b>Total :</b> ${chunk.length}
+                    </td>
+
+                    <td style="padding:5px;">
+                        <b>Present :</b>
+                    </td>
+
+                    <td style="padding:5px;">
+                        <b>Absent :</b>
+                    </td>
+
+                </tr>
+
+            </table>
+
+            
+
+            <div style="
+                display:flex;
+                justify-content:space-between;
+                margin-top:5px;
+                font-size:11px;
+                font-weight:bold;
+            ">
+
+                <div>
+                    Name & Signature of Invigilator
+                </div>
+
+                <div>
+                    Chief Superintendent
+                </div>
+
+            </div>
+
+        </div>
+        `;
+
+        output.innerHTML += html;
+
+    });
+
+}
+
+function formatRangesForMaster(ids) {
+    let ranges = [];
+    let i = 0;
+    while (i < ids.length) {
+        let start = parseId(ids[i]), last = start;
+        while (i + 1 < ids.length) {
+            let next = parseId(ids[i+1]);
+            if (next.prefix === last.prefix && next.val === last.val + 1) { 
+                last = next; 
+                i++; 
+            } else {
+                break;
+            }
+        }
+        ranges.push({start, last}); 
+        i++;
+    }
+    
+    // Group elements by alphabet prefix to prevent repetition 
+    let masterPrefixMap = {};
+    ranges.forEach(r => {
+        let pref = r.start.prefix || "NoPrefix";
+        if (!masterPrefixMap[pref]) masterPrefixMap[pref] = [];
+        
+        if (r.start.num === r.last.num) {
+            masterPrefixMap[pref].push(r.start.num);
+        } else {
+            masterPrefixMap[pref].push(`${r.start.num}-${r.last.num.slice(-3)}`);
+        }
+    });
+
+    let masterOutputString = [];
+    for (let pref in masterPrefixMap) {
+        if (pref === "NoPrefix") {
+            masterOutputString.push(masterPrefixMap[pref].join(', '));
+        } else {
+            masterOutputString.push(`${pref}${masterPrefixMap[pref].join(', ')}`);
+        }
+    }
+    
+    return masterOutputString.join(', ');
+}
+
+function renderStickers(list) {
+    const output = document.getElementById('dynamicOutput');
+    output.innerHTML = ''; 
+
+    const stickersPerPage = 65; 
+    for (let i = 0; i < list.length; i += stickersPerPage) {
+        const pageChunk = list.slice(i, i + stickersPerPage);
+        
+        const container = document.createElement('div');
+        container.className = 'sticker-container';
+        
+        const grid = document.createElement('div');
+        grid.className = 'sticker-grid';
+        
+        pageChunk.forEach(item => {
+            const s = document.createElement('div');
+            s.className = 'sticker';
+            s.innerText = String(item.id).trim();
+            grid.appendChild(s);
+        });
+        
+        container.appendChild(grid);
+        output.appendChild(container);
+    }
+}
+
+function downloadPDF() {
+    const chosenOrientation = document.getElementById('pdfOrientation').value;
+    const styleElement = document.getElementById('dynamicPrintOrientation');
+
+    if (chosenOrientation === 'landscape') {
+        styleElement.innerHTML = `@media print { @page { size: A4 landscape; margin: 10mm; } .master-table { width: 100% !important; } }`;
+    } else {
+        styleElement.innerHTML = `@media print { @page { size: A4 portrait; margin: 0mm; } }`;
+    }
+
+    window.print();
+}
+</script>
+</body>
+</html>
