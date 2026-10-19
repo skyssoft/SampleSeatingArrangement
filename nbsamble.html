@@ -303,20 +303,7 @@
   background-color: #298e46;
   box-shadow: rgba(20, 70, 32, .2) 0 1px 0 inset;
 }
-document.getElementById('date').addEventListener('change', function () {
-    if (globalPaperOrder.length > 0) {
-        const selectedDate = getSelectedExamDate();
 
-        globalPaperOrder.forEach(paper => {
-            papersMasterMap[paper].forEach(student => {
-                student.dateTime = selectedDate;
-            });
-        });
-
-        calculateHallsDistributionMatrix();
-        renderOutput(currentSelectedMode);
-    }
-});
 	
     </style>
 </head>
@@ -403,13 +390,14 @@ document.getElementById('date').addEventListener('change', function () {
                 <label style="color: #ec3636;">Upload Single/Multiple Excel Files of Nominal Roll:</label>
                 <input type="file" id="fileInput" accept=".xlsx, .xls, .Csv" multiple onchange="triggerDataLoad()">
             </div>
-            <div style="width: 110px;">
+            <div style="width: 110px; margin-bottom: 1px;">
                 <button class="btn-clear" onclick="clearAll()">Clear files</button>
             </div>
+            <h6 style="margin-top: 1px; margin-bottom: 0px;text-align: justify;">ഒരു ദിവസത്തിലെ ഒരേ സമയം നടക്കുന്ന മുഴുവൻ പരീക്ഷയുടെയും നോമിനൽ റോളിൻ്റെ EXCEL FILE ഡൌൺലോഡ് ചെയ്ത് ഒരു ഫോൾഡറിൽ SAVE ചെയ്തതിനു ശേഷം അപ്‌ലോഡ് ചെയ്യുക.</h6>
         </div>
 
         <br>
-        <div class="btn-group">
+        <div class="btn-group" style="margin-top: 0px;">
             <button class="btn-card" onclick="process('cards')">Seating Arrangement</button>
             <button class="btn-master" onclick="process('master')">Exam Register</button>
             <button style="background:#096b10; color:white; border:none; font-weight:bold; cursor:pointer;" onclick="process('attendance')">Attendance Sheet</button>
@@ -956,6 +944,28 @@ function adjustPaperInHall(hallIndex, paperName, delta) {
     calculateHallsDistributionMatrix();
     renderOutput('cards');
 }
+
+document.getElementById('date').addEventListener('change', function () {
+    if (globalPaperOrder.length === 0) return;
+
+    const selectedDate = getSelectedExamDate();
+
+    // Update the date for every student in every paper
+    globalPaperOrder.forEach(paper => {
+        if (papersMasterMap[paper]) {
+            papersMasterMap[paper].forEach(student => {
+                student.dateTime = selectedDate;
+            });
+        }
+    });
+
+    // Recalculate hall allocation
+    calculateHallsDistributionMatrix();
+
+    // Refresh whichever output is currently selected
+    renderOutput(currentSelectedMode);
+});
+
 
 function renderMasterTable() {
     const examName = document.getElementById('examName').value;
