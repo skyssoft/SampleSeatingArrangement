@@ -20,19 +20,8 @@
         label { font-size: 13px; font-weight: bold; display: block; margin-bottom: 4px; }
         input, select, button { padding: 8px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 14px; width: 100%; box-sizing: border-box; }
         .input-exam { flex: 1; min-width: 80px; width: 20%;}
-.btn-group {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-top: 5px;
-}
 
-@media (min-width: 900px) {
-    .btn-group {
-        grid-template-columns: repeat(6, 1fr);
-    }
-}
-        /* .btn-group { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 5px; } */
+        .btn-group { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 5px; }
         .upload-group { display: flex; gap: 15px; margin-top: 5px; align-items: flex-end; flex-wrap: wrap; }
         .btn-card { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer;width: auto; }
         .btn-master { background: #9a2d0b; color: white; border: none; font-weight: bold; cursor: pointer; width: auto; }
@@ -314,72 +303,6 @@
   background-color: #298e46;
   box-shadow: rgba(20, 70, 32, .2) 0 1px 0 inset;
 }
-
-.position-class-page {
-    width: 190mm;
-    margin: 0 auto 8mm;
-    padding: 3mm;
-    box-sizing: border-box;
-    background: white;
-    border: 1px dashed #777;
-    page-break-inside: avoid;
-    break-inside: avoid;
-}
-
-.position-class-heading {
-    text-align: center;
-    font-size: 15px;
-    font-weight: bold;
-    padding: 2mm;
-    margin-bottom: 2mm;
-}
-
-.position-three-boxes {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 3mm;
-    align-items: start;
-}
-
-.position-box {
-    border: 1px dashed #555;
-    padding: 2mm;
-    min-width: 0;
-    box-sizing: border-box;
-}
-
-.slip-table {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
-    font-size: 10px;
-}
-
-.slip-table th,
-.slip-table td {
-    border: 1px solid #777;
-    padding: 3px 2px;
-    text-align: center;
-    overflow-wrap: anywhere;
-}
-
-.slip-table th {
-    font-weight: bold;
-    background: #f1f5f9;
-}
-
-.slip-table th:first-child {
-    width: 38%;
-}
-
-@media print {
-    .position-class-page {
-        margin: 0 auto 5mm;
-        page-break-inside: avoid;
-        break-inside: avoid;
-    }
-}
-
 	
     </style>
 </head>
@@ -400,9 +323,11 @@
 <br>
 
         <h1 style="margin: 0 0 5px 0; text-align: center; color: #2563eb; ">Sample Arts & Science College</h1>
-        <h2 style="margin: 0 0 20px 0; text-align: center;">Examination Seating Arrangement( Non Barcode)  <a href="https://skyssoft.github.io/SampleSeatingArrangement/"; target="_blank"><input type="button" class="button-3" value="CLICK HERE TO SWITCH TO BARCODE EXAM";> </a></h2>
+       <h2 style="margin: 0 0 20px 0; text-align: center;">Examination Seating Arrangement(Barcode)&nbsp;&nbsp;
+		   <a href="https://skyssoft.github.io/SampleSeatingArrangement/nbsamble.html"; target="_blank">
+			   <input type="button" class="button-3" value="CLICK HERE TO SWITCH TO NON BARCODE EXAM";> </a></h2>
 
-        <div> </div>
+
         <div class="controls">
             <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
                 <label>Name of Examination:</label>
@@ -451,36 +376,26 @@
                 <input type="number" id="examYear"  class="input-exam">
             </div>
         </div>
-        
+        <br>
 
         <div class="upload-group">
-            <div style="flex: 1; min-width: 150px;">
-
-           <label for="date">Exam Date:</label> <input type="date" id="date" name="date" >
-            </div>
             <div style="flex: 1; min-width: 150px;">
                 <label>Default students strength to all classes:</label>
                 <input type="number" id="pageSize" value="30" onchange="resetToGlobalDefault()">
             </div>
             <div style="flex: 2; min-width: 250px;">
                 <label style="color: #ec3636;">Upload Single/Multiple Excel Files of Nominal Roll:</label>
-                <input type="file" id="fileInput" accept=".xlsx, .xls, .Csv" multiple onchange="triggerDataLoad()">
+                <input type="file" id="fileInput" accept=".xlsx, .xls" multiple onchange="triggerDataLoad()">
             </div>
-            <div style="width: 110px; margin-bottom: 1px;">
+            <div style="width: 110px;">
                 <button class="btn-clear" onclick="clearAll()">Clear files</button>
             </div>
-            <h6 style="margin-top: 1px; margin-bottom: 0px;text-align: justify;">ഒരു ദിവസത്തിലെ ഒരേ സമയം നടക്കുന്ന മുഴുവൻ പരീക്ഷയുടെയും നോമിനൽ റോളിൻ്റെ EXCEL FILE ഡൌൺലോഡ് ചെയ്ത് ഒരു ഫോൾഡറിൽ SAVE ചെയ്തതിനു ശേഷം അപ്‌ലോഡ് ചെയ്യുക.</h6>
+			 
         </div>
-
-        <br>
-        <div class="btn-group" style="margin-top: 0px;">
+<h6 style="margin-top: 8px; margin-bottom: 8px;text-align: justify;">ഒരു ദിവസത്തിലെ ഒരേ സമയം നടക്കുന്ന മുഴുവൻ പരീക്ഷയുടെയും നോമിനൽ റോളിൻ്റെ EXCEL FILE ഡൌൺലോഡ് ചെയ്ത് ഒരു ഫോൾഡറിൽ SAVE ചെയ്തതിനു ശേഷം അപ്‌ലോഡ് ചെയ്യുക.</h6>
+       
+        <div class="btn-group">
             <button class="btn-card" onclick="process('cards')">Seating Arrangement</button>
-            <button
-    style="background:#b45309; color:white; border:none;
-           font-weight:bold; cursor:pointer;"
-    onclick="process('positions')">
-    Seating Position
-</button>
             <button class="btn-master" onclick="process('master')">Exam Register</button>
             <button style="background:#096b10; color:white; border:none; font-weight:bold; cursor:pointer;" onclick="process('attendance')">Attendance Sheet</button>
             <button class="btn-sticker" onclick="process('stickers')">Stickers</button>
@@ -711,15 +626,6 @@ function adjustPaperInHall(hallIndex, paperName, delta) {
     calculateHallsDistributionMatrix();
     renderOutput('cards');
 }
-function getSelectedExamDate() {
-    const dateValue = document.getElementById('date').value;
-
-    if (!dateValue) return '';
-
-    const [year, month, day] = dateValue.split('-');
-
-    return `${day}-${month}-${year}`;
-}
 
 async function loadData() {
     const fileInput = document.getElementById('fileInput');
@@ -730,37 +636,14 @@ async function loadData() {
         const data = await file.arrayBuffer();
         const wb = XLSX.read(data);
         const sheet = wb.Sheets[wb.SheetNames[0]];
-        const paperName = file.name
-    .replace(/\.(xlsx|xls|Csv)$/i, '')
-    .split('_')
-    .slice(2)
-    .join('_')
-    .trim();
-        const excelDateTime = getSelectedExamDate();
-        const rows = XLSX.utils.sheet_to_json(sheet, {
-    header: 1,
-    raw: false,
-    dateNF: "dd-mm-yyyy"
-});
+        const paperName = sheet['B5'] ? String(sheet['B5'].v).trim() : "Unknown Paper";
+        const excelDateTime = sheet['B6'] ? String(sheet['B6'].v).trim() : "";
+        const rows = XLSX.utils.sheet_to_json(sheet, {header: 1});
         
-        for(let r = 1; r < rows.length; r++) { 
-            const regNumber = rows[r][0];
-const studentName = rows[r][1];
-
-let studentDOB = rows[r][2] || "";
-
-if (studentDOB !== "") {
-    // Convert Excel date serial numbers to readable dates
-    if (typeof studentDOB === "number") {
-        const excelDate = XLSX.SSF.parse_date_code(studentDOB);
-
-        if (excelDate) {
-            studentDOB = String(excelDate.d).padStart(2, "0") + "-" +
-                         String(excelDate.m).padStart(2, "0") + "-" +
-                         excelDate.y;
-        }
-    }
-}
+        for(let r = 8; r < rows.length; r++) { 
+            const regNumber = rows[r][1];
+            const studentName = rows[r][2];
+const studentDOB = rows[r][3];
             if(regNumber) {
                 list.push({
     id: regNumber,
@@ -818,9 +701,6 @@ function renderOutput(mode = 'cards') {
 
     } else if (mode === 'attendance') {
         renderAttendanceSheets();
-
-    } else if (mode === 'positions') {
-    renderSeatingPositions();
     }
 
     document.getElementById('printControlGroup').style.display = 'flex';
@@ -886,7 +766,7 @@ function renderHallCard(chunk, num, date) {
         
         bodyHtml += `
             <div style="margin-bottom: 12px;">
-                <div class="paper-label">${g.paper} <span style="font-size:12px; text-decoration: none; font-weight:bold">   (Count: ${g.count})</span></div>
+                <div class="paper-label">${g.paper} <span style="font-size:12px; text-decoration: none; font-weight:bold">&nbsp;&nbsp;&nbsp;(Count: ${g.count})</span></div>
                 <div class="range-numbers">${rText}</div>
             </div>`;
     });
@@ -937,7 +817,7 @@ function renderHallCard(chunk, num, date) {
                 <b>Hall No. ${num}</b> 
                 <b style="margin-left:15px;">Room: <span style="text-decoration: underline;">${roomDisplayLabel}</span></b> 
                 <b style="margin-left:15px;">${date}</b> 
-                <b> (${examName})</b>
+                <b>&emsp;(${examName})</b>
             </div>
             <b>Total Str: ${chunk.length}</b>
         </div>
@@ -1029,28 +909,6 @@ function adjustPaperInHall(hallIndex, paperName, delta) {
     calculateHallsDistributionMatrix();
     renderOutput('cards');
 }
-
-document.getElementById('date').addEventListener('change', function () {
-    if (globalPaperOrder.length === 0) return;
-
-    const selectedDate = getSelectedExamDate();
-
-    // Update the date for every student in every paper
-    globalPaperOrder.forEach(paper => {
-        if (papersMasterMap[paper]) {
-            papersMasterMap[paper].forEach(student => {
-                student.dateTime = selectedDate;
-            });
-        }
-    });
-
-    // Recalculate hall allocation
-    calculateHallsDistributionMatrix();
-
-    // Refresh whichever output is currently selected
-    renderOutput(currentSelectedMode);
-});
-
 
 function renderMasterTable() {
     const examName = document.getElementById('examName').value;
@@ -1477,85 +1335,6 @@ function renderStickers(list) {
         output.appendChild(container);
     }
 }
-
-
-
-
-function renderSeatingPositions() {
-    const output = document.getElementById('dynamicOutput');
-    output.innerHTML = '';
-
-    processedHallsData.forEach((chunk, hallIndex) => {
-        if (!chunk.length) return;
-
-        const students = [...chunk].sort((a, b) => {
-            const pa = globalPaperOrder.indexOf(a.paper);
-            const pb = globalPaperOrder.indexOf(b.paper);
-            if (pa !== pb) return pa - pb;
-
-            const aId = parseId(a.id);
-            const bId = parseId(b.id);
-
-            if (aId.prefix !== bId.prefix) {
-                return aId.prefix.localeCompare(bId.prefix);
-            }
-            return (aId.val || 0) - (bId.val || 0);
-        });
-
-        // Divide this class into 3 approximately equal groups
-        const boxSize = Math.ceil(students.length / 3);
-        let boxesHtml = '';
-
-        for (let box = 0; box < 3; box++) {
-            const start = box * boxSize;
-            const boxStudents = students.slice(start, start + boxSize);
-
-            let rows = boxStudents.map((student, index) => {
-                const position = start + index + 1;
-
-                return `
-                    <tr>
-                        <td>E${String(position).padStart(2, '0')}</td>
-                        <td>${student.id}</td>
-                    </tr>
-                `;
-            }).join('');
-
-            boxesHtml += `
-                <div class="position-box">
-                    <table class="slip-table">
-                        <thead>
-                            <tr>
-                                <th>Position</th>
-                                <th>Register Number</th>
-                            </tr>
-                        </thead>
-                        <tbody>${rows}</tbody>
-                    </table>
-                </div>
-            `;
-        }
-
-        const page = document.createElement('div');
-        page.className = 'position-class-page';
-
-        page.innerHTML = `
-            <div class="position-class-heading">
-                HALL NO. ${hallIndex + 1}
-                &nbsp; | &nbsp; TOTAL: ${students.length}
-            </div>
-            <div class="position-three-boxes">
-                ${boxesHtml}
-            </div>
-        `;
-
-        output.appendChild(page);
-    });
-}
-
-
-
-
 
 function downloadPDF() {
     const chosenOrientation = document.getElementById('pdfOrientation').value;
