@@ -21,9 +21,21 @@
         input, select, button { padding: 8px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 14px; width: 100%; box-sizing: border-box; }
         .input-exam { flex: 1; min-width: 80px; width: 20%;}
 
-        .btn-group { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 5px; }
+        .btn-group {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 5px;
+    padding-bottom: 2px;
+}
+
+@media (min-width: 900px) {
+    .btn-group {
+        grid-template-columns: repeat(6, 1fr);
+    }
+}
         .upload-group { display: flex; gap: 15px; margin-top: 5px; align-items: flex-end; flex-wrap: wrap; }
-        .btn-card { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer;width: auto; }
+        .btn-card { background: var(--primary);padding-top: 5px; padding-bottom: 5px; color: white; border: none; font-weight: bold; cursor: pointer;width: auto; }
         .btn-master { background: #9a2d0b; color: white; border: none; font-weight: bold; cursor: pointer; width: auto; }
         .btn-sticker { background: var(--purple); color: white; border: none; font-weight: bold; cursor: pointer; }
         .btn-clear { background: #ec3636; color: white; border: none; font-weight: bold; cursor: pointer; width: 100%; }
@@ -304,6 +316,73 @@
   box-shadow: rgba(20, 70, 32, .2) 0 1px 0 inset;
 }
 	
+.position-class-page {
+    width: 190mm;
+    margin: 0 auto 8mm;
+    padding: 3mm;
+    box-sizing: border-box;
+    background: white;
+    border: 1px dashed #777;
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+.position-class-heading {
+    text-align: center;
+    font-size: 17px;
+    font-weight: bold;
+    padding: 2mm;
+    margin-bottom: 2mm;
+}
+
+.position-three-boxes {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 3mm;
+    align-items: start;
+}
+
+.position-box {
+    border: 1px dashed #555;
+    padding: 2mm;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.slip-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.slip-table th,
+.slip-table td {
+    border: 1px solid #777;
+    padding: 3px 2px;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.slip-table th {
+    font-weight: bold;
+    background: #f1f5f9;
+}
+
+.slip-table th:first-child {
+    width: 38%;
+}
+
+@media print {
+    .position-class-page {
+        margin: 0 auto 5mm;
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+}
+
+
     </style>
 </head>
 <body>
@@ -394,8 +473,14 @@
         </div>
 <h6 style="margin-top: 8px; margin-bottom: 8px;text-align: justify;">ഒരു ദിവസത്തിലെ ഒരേ സമയം നടക്കുന്ന മുഴുവൻ പരീക്ഷയുടെയും നോമിനൽ റോളിൻ്റെ EXCEL FILE ഡൌൺലോഡ് ചെയ്ത് ഒരു ഫോൾഡറിൽ SAVE ചെയ്തതിനു ശേഷം അപ്‌ലോഡ് ചെയ്യുക.</h6>
        
-        <div class="btn-group">
+         <div class="btn-group" style="margin-top: 0px;">
             <button class="btn-card" onclick="process('cards')">Seating Arrangement</button>
+            <button
+    style="background:#b45309; color:white; border:none;
+           font-weight:bold; cursor:pointer;"
+    onclick="process('positions')">
+    Seating Position
+</button>
             <button class="btn-master" onclick="process('master')">Exam Register</button>
             <button style="background:#096b10; color:white; border:none; font-weight:bold; cursor:pointer;" onclick="process('attendance')">Attendance Sheet</button>
             <button class="btn-sticker" onclick="process('stickers')">Stickers</button>
@@ -700,8 +785,11 @@ function renderOutput(mode = 'cards') {
         renderStickers(flatCollectedList);
 
     } else if (mode === 'attendance') {
-        renderAttendanceSheets();
-    }
+    renderAttendanceSheets();
+
+} else if (mode === 'positions') {
+    renderSeatingPositions();
+}
 
     document.getElementById('printControlGroup').style.display = 'flex';
 }
@@ -1334,6 +1422,81 @@ function renderStickers(list) {
         container.appendChild(grid);
         output.appendChild(container);
     }
+}
+
+function renderSeatingPositions() {
+    const output = document.getElementById('dynamicOutput');
+    output.innerHTML = '';
+
+    processedHallsData.forEach((chunk, hallIndex) => {
+        if (!chunk.length) return;
+
+        const students = [...chunk].sort((a, b) => {
+            const pa = globalPaperOrder.indexOf(a.paper);
+            const pb = globalPaperOrder.indexOf(b.paper);
+            if (pa !== pb) return pa - pb;
+
+            const aId = parseId(a.id);
+            const bId = parseId(b.id);
+
+            if (aId.prefix !== bId.prefix) {
+                return aId.prefix.localeCompare(bId.prefix);
+            }
+            return (aId.val || 0) - (bId.val || 0);
+        });
+
+        // Divide this class into 3 approximately equal groups
+        const boxSize = Math.ceil(students.length / 3);
+        let boxesHtml = '';
+
+        for (let box = 0; box < 3; box++) {
+            const start = box * boxSize;
+            const boxStudents = students.slice(start, start + boxSize);
+
+            let rows = boxStudents.map((student, index) => {
+                const position = start + index + 1;
+
+                return `
+                    <tr>
+                        <td>E&nbsp;${String(position).padStart(2, '0')}</td>
+                        <td>${student.id}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            boxesHtml += `
+                <div class="position-box">
+                    <table class="slip-table">
+                        <thead>
+                            <tr>
+                                <th>Position</th>
+                                <th>Register Number</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        const page = document.createElement('div');
+        page.className = 'position-class-page';
+
+        page.innerHTML = `
+            <div class="position-class-heading">
+                HALL NO. ${hallIndex + 1}
+                &nbsp; | &nbsp; TOTAL: ${students.length}
+                 <h4 style="text-align:center; margin-top: 1px; margin-bottom:1px;">..........Contact to remove this Message(Ph: 9526455151).........</h4>
+        <p style="text-align:center; margin-top: 1px; margin-bottom:1px;">One time payment of Rs.2500/- for unlimited validity</p>
+       
+            </div>
+            <div class="position-three-boxes">
+                ${boxesHtml}
+            </div>
+        `;
+
+        output.appendChild(page);
+    });
 }
 
 function downloadPDF() {
