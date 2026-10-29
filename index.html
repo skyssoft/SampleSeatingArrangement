@@ -21,13 +21,7 @@
         input, select, button { padding: 8px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 14px; width: 100%; box-sizing: border-box; }
         .input-exam { flex: 1; min-width: 80px; width: 20%;}
 
-        .btn-group {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-top: 5px;
-    padding-bottom: 2px;
-}
+        .btn-group {  display: grid;  grid-template-columns: repeat(3, 1fr);    gap: 10px;    margin-top: 5px;    padding-bottom: 2px;}
 
 @media (min-width: 900px) {
     .btn-group {
@@ -45,18 +39,8 @@
         .select-orientation { width: 150px; height: 42px; }
 
         /* Hall Card Styles */
-        .class-card { 
-            width: 190mm; 
-            min-height: 55mm;
-            height: auto;      
-            margin: 0 auto 8mm; 
-            box-sizing: border-box; 
-            display: flex; 
-            flex-direction: column; 
-            background: #fff; 
-            page-break-inside: avoid;
-            border: 0.75pt solid #000;
-        }
+        .class-card {             width: 190mm;             min-height: 55mm;            height: auto;       margin: 0 auto 8mm;     box-sizing: border-box; 
+            display: flex;             flex-direction: column;             background: #fff;    page-break-inside: avoid;   border: 0.75pt solid #000;        }
         .class-header { background: #f8fafc; padding: 6px 15px; border-bottom: 2.5px solid #000; display: flex; justify-content: space-between; align-items: center; }
         .header-main { display: flex; align-items: center; gap: 15px; }
         .card-body { padding: 12px 15px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
@@ -64,27 +48,11 @@
         .paper-label { font-size: 11px; font-weight: 900; text-transform: capitalize; border-bottom: 1.5px solid #000; width: fit-content; margin-bottom: 2px; font-family:'Calibri' }
 
         /* Style for the Room Name container in editor */
-        .room-edit-row {
-            margin-bottom: 10px;
-            padding-bottom: 8px;
-            border-bottom: 1.5px dashed #cbd5e1;
-        }
-        .room-input-edit {
-            width: 100%;
-            height: 28px;
-            padding: 4px;
-            font-size: 12px;
-            font-weight: bold;
-            border-radius: 4px;
-            border: 1px solid #cbd5e1;
-            box-sizing: border-box;
-            background: #fff;
-        }
+        .room-edit-row {            margin-bottom: 10px;            padding-bottom: 8px;            border-bottom: 1.5px dashed #cbd5e1;        }
+        .room-input-edit {   width: 100%; height: 28px;  padding: 4px; font-size: 12px; font-weight: bold;  border-radius: 4px; border: 1px solid #cbd5e1; box-sizing: border-box;  background: #fff;    }
         /* Side Control Panel styling */
         /* Side Control Panel styling - Prevent overflowing card height */
-        .side-roomeditor {
-            position: absolute; 
-            left: -240px; 
+        .side-roomeditor {  position: absolute;     left: -240px; 
             top: 0; 
             display: flex; 
             flex-direction: column; 
@@ -402,11 +370,11 @@
 <br>
 
         <h1 style="margin: 0 0 5px 0; text-align: center; color: #2563eb; ">Sample Arts & Science College</h1>
-       <h2 style="margin: 0 0 20px 0; text-align: center;">Examination Seating Arrangement (BARCODE)&nbsp;&nbsp;
-		   <a href="https://skyssoft.github.io/SampleSeatingArrangement/nb.html"; target="_blank">
-			   <input type="button" class="button-3" value="CLICK HERE TO SWITCH TO NON BARCODE EXAM";> </a></h2>
+       <h2 style="margin: 0 0 5px 0; text-align: center;">Examination Seating Arrangement for BARCODE EXAM</h2>
+		   <h2 style="margin: 0 0 1px 0; text-align: center; "><a href="https://skyssoft.github.io/SampleSeatingArrangement/nb.html"; target="_blank">
+			   <input type="button" class="button-3" style="color: #f8f8f6;" value="Click here to SWITCH to NON BARCODE EXAM";> </a></h2>
 
-
+&nbsp;&nbsp;
         <div class="controls">
             <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
                 <label>Name of Examination:</label>
@@ -469,7 +437,7 @@
             <div style="width: 110px;">
                 <button class="btn-clear" onclick="clearAll()">Clear files</button>
             </div>
-             <span style="margin-top: 0px; margin-bottom: 0px; text-align: justify; font-weight: 750 ; font-size: small; color: rgb(107, 26, 5);">
+			  <span style="margin-top: 0px; margin-bottom: 0px; text-align: justify; font-weight: 750 ; font-size: small; color: rgb(107, 26, 5);">
                 How to Download Excel File From College Portal :  &nbsp;
             
                 Exam Management >> Seat Arrangement List >> Nominal Roll >> Excel File (Right Side)
