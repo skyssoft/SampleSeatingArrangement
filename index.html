@@ -284,29 +284,30 @@
   box-shadow: rgba(20, 70, 32, .2) 0 1px 0 inset;
 }
 	
+
 .position-class-page {
     width: 190mm;
     margin: 0 auto 8mm;
-    padding: 3mm;
+    padding: 1mm;
     box-sizing: border-box;
     background: white;
-    border: 1px dashed #777;
+     border: 1px dashed #777; 
     page-break-inside: avoid;
     break-inside: avoid;
 }
 
 .position-class-heading {
     text-align: center;
-    font-size: 17px;
+    font-size: 14px;
     font-weight: bold;
-    padding: 2mm;
+    padding: 0mm;
     margin-bottom: 2mm;
 }
 
 .position-three-boxes {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 3mm;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0mm;
     align-items: start;
 }
 
@@ -1038,47 +1039,75 @@ function renderSummaryTable() {
     const examSession = document.getElementById('examSession').value;
     const examYear = document.getElementById('examYear').value;
     const output = document.getElementById('dynamicOutput');
-    
+
     const header = `
         <div style="text-align:center; margin-bottom:15px;">
-            <h3 style="text-transform:uppercase; margin-bottom:1px;">${examName} ${examScheme} Examination ${examSession} ${examYear}</h3>
-            <h3 style="text-transform:uppercase; margin-top:1px; margin-bottom:1px;">Hall Summary</h3>
+            <h3 style="text-transform:uppercase; margin-bottom:1px;">
+                ${examName} ${examScheme} Examination ${examSession} ${examYear}
+            </h3>
+            <h3 style="text-transform:uppercase; margin-top:1px; margin-bottom:1px;">
+                Hall Summary
+            </h3>
             <h4>Date & Time: ${processedHallsData[0]?.[0]?.dateTime || ''}</h4>
         </div>
-        <table class="master-table" style="max-width:850px; margin: 0 auto;">
+
+        <table class="master-table" style="max-width:850px; margin:0 auto;">
             <thead>
                 <tr>
-                    <th style="width:15%">Hall No.</th>
-                    <th style="width:70%">Register Numbers Mixed Breakdown</th>
+                    <th style="width:12%">Hall No.</th>
+                    <th style="width:18%">Room Number</th>
+                    <th style="width:55%">Register Number</th>
                     <th style="width:15%">Total Str</th>
                 </tr>
             </thead>
             <tbody>`;
-            
+
     let rows = "";
 
     processedHallsData.forEach((chunk, index) => {
         if (chunk.length === 0) return;
-        
+
         let sortedChunk = [...chunk].sort((a, b) => {
             let idxA = globalPaperOrder.indexOf(a.paper);
             let idxB = globalPaperOrder.indexOf(b.paper);
-            if(idxA !== idxB) return idxA - idxB;
+
+            if (idxA !== idxB) return idxA - idxB;
+
             let pa = parseId(a.id), pb = parseId(b.id);
-            if (pa.prefix !== pb.prefix) return pa.prefix.localeCompare(pb.prefix);
+
+            if (pa.prefix !== pb.prefix)
+                return pa.prefix.localeCompare(pb.prefix);
+
             return (pa.val || 0) - (pb.val || 0);
         });
 
         let idsInHall = sortedChunk.map(item => item.id);
         let formattedRanges = formatRangesForMaster(idsInHall);
 
-        rows += `<tr>
-            <td style="text-align:center; font-weight:bold; font-size:14px;"> ${index + 1}</td>
-            <td style="padding: 8px 12px; font-family: 'Calibri', monospace; font-size:13px; font-weight:bold; line-height:1.4;">${formattedRanges}</td>
-            <td style="text-align:center; font-weight:bold; font-size:16px;">${chunk.length}</td>
-        </tr>`;
+        // Get room name assigned to this hall
+        let roomName = roomNamesMap[index + 1] || "";
+
+        rows += `
+            <tr>
+                <td style="text-align:center; font-weight:bold; font-size:14px;">
+                    ${index + 1}
+                </td>
+
+                <td style="text-align:center; font-weight:bold; font-size:13px;">
+                    ${roomName}
+                </td>
+
+                <td style="padding:8px 12px; font-family:'Calibri', monospace;
+                    font-size:13px; font-weight:bold; line-height:1.4;">
+                    ${formattedRanges}
+                </td>
+
+                <td style="text-align:center; font-weight:bold; font-size:16px;">
+                    ${chunk.length}
+                </td>
+            </tr>`;
     });
-    
+
     output.innerHTML = header + rows + `</tbody></table>`;
 }
 
@@ -1400,12 +1429,16 @@ function renderSeatingPositions() {
     const output = document.getElementById('dynamicOutput');
     output.innerHTML = '';
 
+    const positionPrefixes = ['A', 'B', 'C', 'D'];
+
     processedHallsData.forEach((chunk, hallIndex) => {
         if (!chunk.length) return;
+        const roomName = roomNamesMap[hallIndex + 1] || "";
 
         const students = [...chunk].sort((a, b) => {
             const pa = globalPaperOrder.indexOf(a.paper);
             const pb = globalPaperOrder.indexOf(b.paper);
+
             if (pa !== pb) return pa - pb;
 
             const aId = parseId(a.id);
@@ -1414,26 +1447,37 @@ function renderSeatingPositions() {
             if (aId.prefix !== bId.prefix) {
                 return aId.prefix.localeCompare(bId.prefix);
             }
+
             return (aId.val || 0) - (bId.val || 0);
         });
 
-        // Divide this class into 3 approximately equal groups
-        const boxSize = Math.ceil(students.length / 3);
+        // Divide students into four equal parts
+        const boxSize = Math.ceil(students.length / 4);
+
         let boxesHtml = '';
 
-        for (let box = 0; box < 3; box++) {
+        for (let box = 0; box < 4; box++) {
+
             const start = box * boxSize;
-            const boxStudents = students.slice(start, start + boxSize);
+
+            const boxStudents = students.slice(
+                start,
+                start + boxSize
+            );
 
             let rows = boxStudents.map((student, index) => {
-                const position = start + index + 1;
+
+                const position = index + 1;
 
                 return `
                     <tr>
-                        <td>E&nbsp;${String(position).padStart(2, '0')}</td>
+                        <td>
+                            ${positionPrefixes[box]}&nbsp;${String(position).padStart(2, '0')}
+                        </td>
                         <td>${student.id}</td>
                     </tr>
                 `;
+
             }).join('');
 
             boxesHtml += `
@@ -1441,7 +1485,7 @@ function renderSeatingPositions() {
                     <table class="slip-table">
                         <thead>
                             <tr>
-                                <th>Position</th>
+                                <th>Seat Code</th>
                                 <th>Register Number</th>
                             </tr>
                         </thead>
@@ -1456,12 +1500,18 @@ function renderSeatingPositions() {
 
         page.innerHTML = `
             <div class="position-class-heading">
-                HALL NO. ${hallIndex + 1}
+                HALL NO. ${hallIndex + 1} &nbsp; | &nbsp;Room: ${roomName}
                 &nbsp; | &nbsp; TOTAL: ${students.length}
-                 <h4 style="text-align:center; margin-top: 1px; margin-bottom:1px;">..........Contact to remove this Message(Ph: 9526455151).........</h4>
-        <p style="text-align:center; margin-top: 1px; margin-bottom:1px;">One time payment of Rs.2500/- for unlimited validity</p>
-       
+
+                <h4 style="text-align:center; margin-top:1px; margin-bottom:1px;">
+                    ..........Contact to remove this Message(Ph: 9526455151).........
+                </h4>
+
+                <p style="text-align:center; margin-top:1px; margin-bottom:1px;">
+                    One time payment of Rs.2500/- for unlimited validity
+                </p>
             </div>
+
             <div class="position-three-boxes">
                 ${boxesHtml}
             </div>
