@@ -382,6 +382,365 @@
     }
 }
 
+/* Seating Position Editor */
+
+.position-editor {
+    width: 100%;
+    margin: 10px auto 20px;
+    padding: 12px;
+    background: #fff;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+.hall-select-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin: 8px 0 15px;
+}
+
+.hall-select-btn {
+    width: auto;
+    min-width: 55px;
+    padding: 5px 9px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    
+}
+
+.hall-select-btn.active {
+    background: #dc2626;
+    
+    
+}
+
+.position-editor-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 180px;
+    gap: 12px;
+    align-items: start;
+}
+
+.position-paper-section {
+    border: 1px solid #cbd5e1;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.position-paper-heading {
+    background: #e2e8f0;
+    padding: 8px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.position-radio-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.position-radio-group label {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    margin: 0;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.position-radio-group input {
+    width: auto;
+    margin: 0;
+    cursor: pointer;
+}
+
+.position-student-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 9px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.position-reg-number {
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.position-count-panel {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 10px;
+    position: sticky;
+    top: 10px;
+}
+
+.position-count-panel h4 {
+    margin: 0 0 10px;
+    text-align: center;
+}
+
+.position-count-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+    margin-bottom: 5px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.position-count-A { color: #2563eb; }
+.position-count-B { color: #059669; }
+.position-count-C { color: #d97706; }
+.position-count-D { color: #7c3aed; }
+
+@media(max-width:650px) {
+    .position-editor-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .position-count-panel {
+        position: static;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 5px;
+    }
+
+    .position-count-panel h4 {
+        grid-column: 1 / -1;
+    }
+}
+
+.hall-select-btn {
+    background: #2563eb;
+    color: #ffffff;
+    border: 1px solid #1d4ed8;
+    transition: background 0.2s ease;
+}
+
+.hall-select-btn:hover {
+    background: #1d4ed8;
+}
+
+.hall-select-btn.active {
+    background: #16a34a !important;
+    color: #ffffff !important;
+    border: 2px solid #15803d !important;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
+}
+
+.position-print-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+}
+
+.position-hall-box {
+    width: 100% !important;
+    min-height: auto !important;
+    margin: 0 !important;
+    padding: 5px !important;
+    box-sizing: border-box;
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+.position-hall-box .position-page-header {
+    margin-bottom: 4px !important;
+}
+
+.position-hall-box .position-page-header h3,
+.position-hall-box .position-page-header h4 {
+    margin: 2px 0 !important;
+    font-size: 11px !important;
+}
+
+@media print {
+    .position-print-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 6px !important;
+    }
+
+    .position-hall-box {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+    }
+}
+
+.position-a4-page {
+    width: 190mm;
+    min-height: 277mm;
+    box-sizing: border-box;
+    padding: 4mm;
+    display: flex;
+    flex-direction: column;
+    gap: 8mm;
+    page-break-after: always;
+    break-after: page;
+}
+
+.position-hall-box {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 3mm;
+    border: 1px solid #fefefe;
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+.position-two-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+}
+
+.position-two-columns .slip-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.position-two-columns .slip-table th,
+.position-two-columns .slip-table td {
+    border: 1px solid #000000;
+    padding: 3px;
+    font-size: 12.5px;
+}
+
+.position-hall-box .position-page-header {
+    text-align: center;
+    margin-bottom: 4px;
+}
+
+.position-hall-box .position-page-header h3,
+.position-hall-box .position-page-header h4 {
+    margin: 2px 0;
+    font-size: 12.5px;
+}
+
+@media print {
+    .position-a4-page {
+        page-break-after: always;
+        break-after: page;
+        margin-top: 15px;
+        margin-left: 20px;
+        align-self : center;
+    }
+}
+
+/* Hall information header */
+.position-hall-info {
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 5px;
+    border: 1px solid #000000;
+    border-radius: 5px;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+.position-hall-top {
+    display: grid;
+    grid-template-columns: 1fr 2fr auto;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    
+}
+
+.position-hall-title {
+    font-size: 17px;
+    font-weight: 800;
+    color: #000000;
+    white-space: nowrap;
+}
+
+.position-room-name {
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+    color: #000000;
+}
+
+.position-strength {
+    font-size: 9px;
+    font-weight: 700;
+    text-align: center;
+    color: #000002;
+    white-space: nowrap;
+}
+
+.position-strength strong {
+    
+    margin-left: 4px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    
+    color: rgb(0, 0, 0);
+    font-size: 14px;
+}
+
+.position-exam-name {
+    padding: 5px 8px 2px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: #000000;
+    text-transform: uppercase;
+}
+
+.position-section-title {
+    padding: 3px 8px 5px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #000000;
+}
+
+/* Compact hall layout */
+.position-hall-box {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 2mm;
+    border: 1px solid #000000;
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+@media print {
+    .position-hall-info {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+}
+
+.position-exam-date {
+    text-align: center;
+    padding: 2px 8px 5px;
+    font-size: 11px;
+    font-weight: 800;
+    color: #17365d;
+}
+
+
 	
     </style>
 </head>
@@ -517,6 +876,8 @@ let processedHallsData = [];
 let currentSelectedMode = 'cards';
 let globalPaperOrder = []; 
 let roomNamesMap = {};
+let seatPaperCodes = {};
+let selectedPositionHall = 1;
 
 
 
@@ -899,7 +1260,7 @@ function renderHallCard(chunk, num, date) {
 
     // Get current room name or default to blank dashes if empty
     let currentRoomName = roomNamesMap[num] || "";
-    let roomDisplayLabel = currentRoomName ? currentRoomName : "________";
+    let roomDisplayLabel = currentRoomName ? currentRoomName : "";
 
     // Build the side control layout with the Room Text Input Box
     let editorConfigRow = hallDistributionOverrides[num - 1] || {};
@@ -948,7 +1309,7 @@ function renderHallCard(chunk, num, date) {
             <b>Total Str: ${chunk.length}</b>
         </div>
         <h3 style="text-align:center; margin-top: 1px; margin-bottom:1px;">..........Contact to remove this Message(Ph: 9526455151).........</h3>
-        <p style="text-align:center; margin-top: 1px; margin-bottom:1px;">One time payment of Rs.2500/- for unlimited validity</p>
+        <p style="text-align:center; margin-top: 1px; margin-bottom:1px;">One time payment of Rs.6500/- for unlimited validity</p>
         <div class="card-body">${bodyHtml}</div>`;
         
     output.appendChild(card);
@@ -1058,23 +1419,34 @@ document.getElementById('date').addEventListener('change', function () {
 });
 
 
+
 function renderMasterTable() {
     const examName = document.getElementById('examName').value;
     const examScheme = document.getElementById('examScheme').value;
     const examSession = document.getElementById('examSession').value;
     const examYear = document.getElementById('examYear').value;
     const output = document.getElementById('dynamicOutput');
-    
+
     const header = `
         <div style="text-align:center; margin-bottom:15px;">
-            <h4 style="text-transform:uppercase; margin-bottom: 1px;">Sample Arts & Science College</h4>
-            <h3 style="text-transform:uppercase; margin-top: 1px; margin-bottom:1px;">${examName} ${examScheme} Examination ${examSession} ${examYear}</h3>
-            <h4 style="margin-top: 1px; margin-bottom:1px;">Date & Time: ${processedHallsData[0]?.[0]?.dateTime || ''}</h4>
+            <h4 style="text-transform:uppercase; margin-bottom:1px;">
+                Sample Arts & Science College
+            </h4>
+            <h3 style="text-transform:uppercase; margin-top:1px; margin-bottom:1px;">
+                ${examName} ${examScheme} Examination ${examSession} ${examYear}
+            </h3>
+            <h4 style="margin-top:1px; margin-bottom:1px;">
+                Date & Time: ${processedHallsData[0]?.[0]?.dateTime || ''}
+            </h4>
+            <h3 style="text-align:center; margin-top: 1px; margin-bottom:1px;">..........Contact to remove this Message(Ph: 9526455151).........</h3>
+        <p style="text-align:center; margin-top: 1px; margin-bottom:1px;">One time payment of Rs.6500/- for unlimited validity</p>
         </div>
+
         <table class="master-table">
             <thead>
                 <tr>
                     <th class="col-hall">Hall</th>
+                    <th class="col-hall">Room</th>
                     <th class="col-paper">Subject</th>
                     <th class="col-regs-master">Register Numbers</th>
                     <th class="col-str">Str</th>
@@ -1083,42 +1455,99 @@ function renderMasterTable() {
                 </tr>
             </thead>
             <tbody>`;
-    
+
     let rows = "";
-    
+
     processedHallsData.forEach((chunk, hIdx) => {
+
         if (chunk.length === 0) return;
-        
+
+        const roomName = roomNamesMap[hIdx + 1] || "";
+
         let sortedChunk = [...chunk].sort((a, b) => {
             let idxA = globalPaperOrder.indexOf(a.paper);
             let idxB = globalPaperOrder.indexOf(b.paper);
-            if(idxA !== idxB) return idxA - idxB;
+
+            if (idxA !== idxB) return idxA - idxB;
+
             let pa = parseId(a.id), pb = parseId(b.id);
-            if (pa.prefix !== pb.prefix) return pa.prefix.localeCompare(pb.prefix);
+
+            if (pa.prefix !== pb.prefix)
+                return pa.prefix.localeCompare(pb.prefix);
+
             return (pa.val || 0) - (pb.val || 0);
         });
 
         let subGroups = [];
+
         sortedChunk.forEach(item => {
-            if (subGroups.length === 0 || subGroups[subGroups.length-1].paper !== item.paper) {
-                subGroups.push({ paper: item.paper, ids: [item.id] });
+
+            if (
+                subGroups.length === 0 ||
+                subGroups[subGroups.length - 1].paper !== item.paper
+            ) {
+                subGroups.push({
+                    paper: item.paper,
+                    ids: [item.id]
+                });
             } else {
-                subGroups[subGroups.length-1].ids.push(item.id);
+                subGroups[subGroups.length - 1].ids.push(item.id);
             }
         });
 
         subGroups.forEach((g, gIdx) => {
-            rows += `<tr>
-                ${gIdx === 0 ? `<td rowspan="${subGroups.length}" style="text-align:center; font-weight:bold; font-size:13px;">${hIdx+1}</td>` : ''}
-                <td style="font-size:11px">${g.paper}</td>
-                <td>${formatRangesForMaster(g.ids)}</td>
-                ${gIdx === 0 ? `<td rowspan="${subGroups.length}" style="text-align:center; font-weight:bold; font-size:13px;">${chunk.length}</td><td rowspan="${subGroups.length}"><div class="dotted-line"></div></td><td rowspan="${subGroups.length}"><div class="dotted-line"></div></td>` : ''}
-            </tr>`;
+
+            const paperCount = g.ids.length;
+
+            rows += `
+                <tr>
+                    ${gIdx === 0 ? `
+                        <td rowspan="${subGroups.length}"
+                            style="text-align:center;font-weight:bold;font-size:13px;">
+                            ${hIdx + 1}
+                        </td>
+                    ` : ''}
+
+                    ${gIdx === 0 ? `
+                        <td rowspan="${subGroups.length}"
+                            style="text-align:center;font-weight:bold;font-size:13px;">
+                            ${roomName}
+                        </td>
+                    ` : ''}
+
+                    <td style="font-size:11px;">
+                        ${g.paper}
+                        
+                    </td>
+
+                    <td>
+                        ${formatRangesForMaster(g.ids)}
+                        <span style="font-weight:bold; white-space:nowrap;">
+                            (Count: ${paperCount})
+                        </span>
+                    </td>
+
+                    ${gIdx === 0 ? `
+                        <td rowspan="${subGroups.length}"
+                            style="text-align:center;font-weight:bold;font-size:13px;">
+                            ${chunk.length}
+                        </td>
+
+                        <td rowspan="${subGroups.length}">
+                            <div class="dotted-line"></div>
+                        </td>
+
+                        <td rowspan="${subGroups.length}">
+                            <div class="dotted-line"></div>
+                        </td>
+                    ` : ''}
+                </tr>`;
         });
     });
-    
+
     output.innerHTML = header + rows + `</tbody></table>`;
 }
+
 
 
 function renderSummaryTable() {
@@ -1137,6 +1566,8 @@ function renderSummaryTable() {
                 Hall Summary
             </h3>
             <h4>Date & Time: ${processedHallsData[0]?.[0]?.dateTime || ''}</h4>
+            <h3 style="text-align:center; margin-top: 1px; margin-bottom:1px;">..........Contact to remove this Message(Ph: 9526455151).........</h3>
+        <p style="text-align:center; margin-top: 1px; margin-bottom:1px;">One time payment of Rs.6500/- for unlimited validity</p>
         </div>
 
         <table class="master-table" style="max-width:850px; margin:0 auto;">
@@ -1266,6 +1697,8 @@ function renderAttendanceSheets() {
                         <b>Date & Time :</b> ${chunk[0].dateTime}
                     </td>
                 </tr>
+                <h3 style="text-align:center; margin-top: 1px; margin-bottom:1px;">..........Contact to remove this Message(Ph: 9526455151).........</h3>
+        <p style="text-align:center; margin-top: 1px; margin-bottom:1px;">One time payment of Rs.6500/- for unlimited validity</p>
             </table>
 
             <table style="
@@ -1518,99 +1951,468 @@ function renderStickers(list) {
 
 
 function renderSeatingPositions() {
+
     const output = document.getElementById('dynamicOutput');
     output.innerHTML = '';
 
-    const positionPrefixes = ['A', 'B', 'C', 'D'];
+    if (!processedHallsData.length) return;
 
-    processedHallsData.forEach((chunk, hallIndex) => {
+    // Hall selection buttons
+    let hallButtons = '';
+
+    processedHallsData.forEach((chunk, index) => {
         if (!chunk.length) return;
-        const roomName = roomNamesMap[hallIndex + 1] || "";
 
-        const students = [...chunk].sort((a, b) => {
-            const pa = globalPaperOrder.indexOf(a.paper);
-            const pb = globalPaperOrder.indexOf(b.paper);
+        hallButtons += `
+            <button
+                class="hall-select-btn ${selectedPositionHall === index + 1 ? 'active' : ''}"
+                onclick="selectPositionHall(${index + 1})">
+                Hall ${index + 1}
+            </button>
+        `;
+    });
 
-            if (pa !== pb) return pa - pb;
+    output.innerHTML = `
+        <div class="position-editor no-print-area">
 
-            const aId = parseId(a.id);
-            const bId = parseId(b.id);
+            <h3 style="margin:0;">Seating Position Editor</h3>
 
-            if (aId.prefix !== bId.prefix) {
-                return aId.prefix.localeCompare(bId.prefix);
-            }
+            <div class="hall-select-buttons">
+                ${hallButtons}
+            </div>
 
-            return (aId.val || 0) - (bId.val || 0);
+            <div id="positionEditorContent"></div>
+
+        </div>
+
+        <div id="positionPrintOutput"></div>
+    `;
+
+    renderPositionEditor(selectedPositionHall);
+    renderPositionPrintSheets();
+}
+
+
+function renderPositionEditor(hallIndex) {
+
+    const editor = document.getElementById('positionEditorContent');
+
+    if (!editor) return;
+
+    const students = processedHallsData[hallIndex - 1] || [];
+
+    if (!students.length) {
+        editor.innerHTML = 'No students in this hall.';
+        return;
+    }
+
+    let grouped = {};
+
+    // Group students paper-wise
+    students.forEach((student, index) => {
+
+        if (!grouped[student.paper]) {
+            grouped[student.paper] = [];
+        }
+
+        grouped[student.paper].push({
+            student: student,
+            originalIndex: index
         });
+    });
 
-        // Divide students into four equal parts
-        const boxSize = Math.ceil(students.length / 4);
+    let paperHtml = '';
 
-        let boxesHtml = '';
+    Object.keys(grouped).forEach(paperName => {
 
-        for (let box = 0; box < 4; box++) {
+        const currentPaperCode =
+            seatPaperCodes[hallIndex]?.[paperName] || 'A';
 
-            const start = box * boxSize;
+        const paperKey = encodeURIComponent(paperName)
+            .replace(/'/g, '%27');
 
-            const boxStudents = students.slice(
-                start,
-                start + boxSize
-            );
+        let paperRadios = ['A', 'B', 'C', 'D'].map(code => {
 
-            let rows = boxStudents.map((student, index) => {
+            return `
+                <label>
+                    <input
+                        type="radio"
+                        name="paper_${hallIndex}_${paperKey}"
+                        value="${code}"
+                        ${currentPaperCode === code ? 'checked' : ''}
+                        onchange="setPaperSeatCode(
+                            ${hallIndex},
+                            decodeURIComponent('${paperKey}'),
+                            '${code}'
+                        )">
+                    ${code}
+                </label>
+            `;
 
-                const position = index + 1;
+        }).join('');
+
+        let studentHtml = '';
+
+        grouped[paperName].forEach(item => {
+
+            const student = item.student;
+            const studentIndex = item.originalIndex;
+
+            const effectiveCode =
+                getStudentSeatCode(hallIndex, student);
+
+            const individualRadios = ['A', 'B', 'C', 'D'].map(code => {
 
                 return `
-                    <tr>
-                        <td>
-                            ${positionPrefixes[box]}&nbsp;${String(position).padStart(2, '0')}
-                        </td>
-                        <td>${student.id}</td>
-                    </tr>
+                    <label>
+                        <input
+                            type="radio"
+                            name="student_${hallIndex}_${studentIndex}"
+                            value="${code}"
+                            ${effectiveCode === code ? 'checked' : ''}
+                            onchange="setIndividualSeatCode(
+                                ${hallIndex},
+                                ${studentIndex},
+                                '${code}'
+                            )">
+                        ${code}
+                    </label>
                 `;
 
             }).join('');
 
-            boxesHtml += `
-                <div class="position-box">
-                    <table class="slip-table">
-                        <thead>
-                            <tr>
-                                <th>Seat Code</th>
-                                <th>Register Number</th>
-                            </tr>
-                        </thead>
-                        <tbody>${rows}</tbody>
-                    </table>
+            studentHtml += `
+                <div class="position-student-row">
+
+                    <span class="position-reg-number">
+                        ${student.id}
+                    </span>
+
+                    <div class="position-radio-group">
+                        ${individualRadios}
+                    </div>
+
                 </div>
             `;
-        }
+        });
 
-        const page = document.createElement('div');
-        page.className = 'position-class-page';
+        paperHtml += `
+            <div class="position-paper-section">
 
-        page.innerHTML = `
-            <div class="position-class-heading">
-                HALL NO. ${hallIndex + 1} &nbsp; | &nbsp;Room: ${roomName}
-                &nbsp; | &nbsp; TOTAL: ${students.length}
+                <div class="position-paper-heading">
 
-                <h4 style="text-align:center; margin-top:1px; margin-bottom:1px;">
-                    ..........Contact to remove this Message(Ph: 9526455151).........
-                </h4>
+                    <div style="
+                        display:flex;
+                        justify-content:space-between;
+                        align-items:center;
+                        gap:8px;
+                        flex-wrap:wrap;
+                    ">
 
-                <p style="text-align:center; margin-top:1px; margin-bottom:1px;">
-                    One time payment of Rs.2500/- for unlimited validity
-                </p>
-            </div>
+                        <span>${paperName}</span>
 
-            <div class="position-three-boxes">
-                ${boxesHtml}
+                        <div class="position-radio-group">
+                            ${paperRadios}
+                        </div>
+
+                    </div>
+
+                </div>
+
+                ${studentHtml}
+
             </div>
         `;
-
-        output.appendChild(page);
     });
+
+    // Live count panel
+    const counts = getHallPositionCounts(hallIndex);
+
+    editor.innerHTML = `
+        <div class="position-editor-layout">
+
+            <div>
+                <h4 style="margin:0 0 8px;">
+                    Hall No. ${hallIndex} - Student List
+                </h4>
+
+                ${paperHtml}
+            </div>
+
+            <div class="position-count-panel">
+
+                <h4>Seat Code Count</h4>
+
+                <div class="position-count-row">
+                    <span class="position-count-A">Code A</span>
+                    <span>${counts.A}</span>
+                </div>
+
+                <div class="position-count-row">
+                    <span class="position-count-B">Code B</span>
+                    <span>${counts.B}</span>
+                </div>
+
+                <div class="position-count-row">
+                    <span class="position-count-C">Code C</span>
+                    <span>${counts.C}</span>
+                </div>
+
+                <div class="position-count-row">
+                    <span class="position-count-D">Code D</span>
+                    <span>${counts.D}</span>
+                </div>
+
+                <div class="position-count-row"
+                     style="background:#dbeafe;">
+                    <span>Total Students</span>
+                    <span>${students.length}</span>
+                </div>
+
+            </div>
+
+        </div>
+    `;
+}
+
+
+// Generate the final printable seating position sheets
+
+
+
+
+
+
+function renderPositionPrintSheets() {
+    const printOutput = document.getElementById('positionPrintOutput');
+    if (!printOutput) return;
+
+    const examName = document.getElementById('examName').value;
+    const examScheme = document.getElementById('examScheme').value;
+    const examSession = document.getElementById('examSession').value;
+    const examYear = document.getElementById('examYear').value;
+    const rawDate = document.getElementById('date')?.value || '';
+
+const examDate = rawDate
+    ? rawDate.split('-').reverse().join('-')
+    : '';
+
+    const examinationName =
+        `${examName} ${examScheme} Examination ${examSession} ${examYear}`
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    let html = '';
+
+    // Two halls per A4 page
+    const hallsPerPage = 2;
+
+    for (let pageStart = 0;
+         pageStart < processedHallsData.length;
+         pageStart += hallsPerPage) {
+
+        let hallHtml = '';
+
+        for (let h = pageStart;
+             h < Math.min(pageStart + hallsPerPage, processedHallsData.length);
+             h++) {
+
+            const students = processedHallsData[h];
+            if (!students || !students.length) continue;
+
+            const hallNo = h + 1;
+            const roomName = roomNamesMap[hallNo] || "";
+            const strength = students.length;
+
+            const midpoint = Math.ceil(strength / 2);
+            const leftStudents = students.slice(0, midpoint);
+            const rightStudents = students.slice(midpoint);
+
+            function createRows(list, startIndex) {
+                return list.map((student, index) => {
+                    const code = getStudentSeatCode(hallNo, student);
+
+                    const positionNumber = students
+                        .slice(0, startIndex + index + 1)
+                        .filter(s =>
+                            getStudentSeatCode(hallNo, s) === code
+                        ).length;
+
+                    const positionCode =
+                        code +'&nbsp;'+ String(positionNumber).padStart(2, '0');
+
+                    return `
+                        <tr>
+                            <td>${positionCode}</td>
+                            <td>${student.id}</td>
+                        </tr>`;
+                }).join('');
+            }
+
+            hallHtml += `
+                <div class="position-hall-box">
+
+                    <!-- HALL INFORMATION HEADER -->
+                    <div class="position-hall-info">
+
+                        <div class="position-hall-top">
+                            <div class="position-hall-title">
+                                HALL - ${hallNo}
+                            </div>
+
+                            <div class="position-room-name">
+                               Room :  ${roomName}
+                            </div>
+
+                            <div class="position-strength">
+                                STRENGTH : 
+                                <strong>${strength}</strong>
+                            </div>
+                        </div>
+
+                        <div class="position-exam-name">
+                            ${examinationName}
+                        </div>
+
+
+                        <div class="position-section-title">
+                            SEATING POSITION  (${examDate})
+                             
+                        </div>
+                        <h3 style="text-align:center; margin-top: 1px; margin-bottom:1px;">..........Contact to remove this Message(Ph: 9526455151).........</h3>
+        <p style="text-align:center; margin-top: 1px; margin-bottom:1px;">One time payment of Rs.6500/- for unlimited validity</p>
+
+                    </div>
+
+                    <!-- TWO COLUMN STUDENT LIST -->
+                    <div class="position-two-columns">
+
+                        <table class="slip-table">
+                            <thead>
+                                <tr>
+                                    <th>Position</th>
+                                    <th>Register Number</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${createRows(leftStudents, 0)}
+                            </tbody>
+                        </table>
+
+                        <table class="slip-table">
+                            <thead>
+                                <tr>
+                                    <th>Position</th>
+                                    <th>Register Number</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${createRows(rightStudents, midpoint)}
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>`;
+        }
+
+        html += `
+            <div class="position-a4-page">
+                ${hallHtml}
+            </div>`;
+    }
+
+    printOutput.innerHTML = html;
+}
+
+
+
+
+
+
+function getStudentSeatCode(hallIndex, student) {
+    const paperCode =
+        seatPaperCodes[hallIndex]?.[student.paper] || 'A';
+
+    return student._seatCodeOverride || paperCode;
+}
+
+
+
+function setPaperSeatCode(hallIndex, paperName, code) {
+    if (!seatPaperCodes[hallIndex]) {
+        seatPaperCodes[hallIndex] = {};
+    }
+
+    seatPaperCodes[hallIndex][paperName] = code;
+
+    // Remove individual overrides for this paper
+    const students = processedHallsData[hallIndex - 1] || [];
+
+    students.forEach(student => {
+        if (student.paper === paperName) {
+            student._seatCodeOverride = '';
+        }
+    });
+
+    // Refresh editor and PDF output
+    renderPositionEditor(hallIndex);
+    renderPositionPrintSheets();
+}
+
+
+
+
+function setIndividualSeatCode(hallIndex, studentIndex, code) {
+    const student = processedHallsData[hallIndex - 1]?.[studentIndex];
+
+    if (!student) return;
+
+    student._seatCodeOverride = code;
+
+    // Refresh editor and PDF output
+    renderPositionEditor(hallIndex);
+    renderPositionPrintSheets();
+}
+
+
+
+function getHallPositionCounts(hallIndex) {
+
+    const counts = { A: 0, B: 0, C: 0, D: 0 };
+
+    const students = processedHallsData[hallIndex - 1] || [];
+
+    students.forEach(student => {
+        const code = getStudentSeatCode(hallIndex, student);
+
+        if (counts[code] !== undefined) {
+            counts[code]++;
+        }
+    });
+
+    return counts;
+}
+
+
+
+function selectPositionHall(hallIndex) {
+    selectedPositionHall = hallIndex;
+
+    // Update active colour of Hall buttons
+    document.querySelectorAll('.hall-select-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    const selectedButton = document.querySelector(
+        `.hall-select-btn[onclick="selectPositionHall(${hallIndex})"]`
+    );
+
+    if (selectedButton) {
+        selectedButton.classList.add('active');
+    }
+
+    // Display selected hall details
+    renderPositionEditor(hallIndex);
 }
 
 
