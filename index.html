@@ -606,14 +606,46 @@
 }
 
 @media print {
+    @page {
+        size: A4 portrait;
+        margin: 10mm;
+       
+    }
+
+    #positionPrintOutput {
+        width: 100%;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
     .position-a4-page {
+        width: 190mm !important;
+        min-height: 277mm !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
+        box-sizing: border-box;
         page-break-after: always;
         break-after: page;
-        margin-top: 15px;
-        margin-left: 20px;
-        align-self : center;
+    }
+
+    .position-hall-box {
+        width: 100%;
+        margin: 0 !important;
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+    }
+
+    .position-page-header {
+        text-align: center !important;
+    }
+
+    .slip-table th,
+    .slip-table td {
+        text-align: center !important;
+        vertical-align: middle;
     }
 }
+
 
 /* Hall information header */
 .position-hall-info {
