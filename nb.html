@@ -636,6 +636,20 @@
 }
 
 @media print {
+    .position-a4-page {
+    width: 190mm;
+    min-height: 277mm;
+    box-sizing: border-box;
+    padding: 4mm;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8mm;
+    page-break-after: always;
+    break-after: page;
+}
+
+@media print {
     @page {
         size: A4 portrait;
         margin: 10mm;
@@ -675,7 +689,7 @@
         vertical-align: middle;
     }
 }
-
+}
 
 /* Hall information header */
 .position-hall-info {
@@ -949,14 +963,6 @@ async function triggerDataLoad() {
         }
         papersMasterMap[item.paper].push(item);
     });
-
-    for (let paperName in papersMasterMap) {
-        papersMasterMap[paperName].sort((a, b) => {
-            let pa = parseId(a.id), pb = parseId(b.id);
-            if (pa.prefix !== pb.prefix) return pa.prefix.localeCompare(pb.prefix);
-            return (pa.val || 0) - (pb.val || 0);
-        });
-    }
 
     resetToGlobalDefault();
 }
@@ -1232,26 +1238,26 @@ function renderHallCard(chunk, num, date) {
     let bodyHtml = "";
     let groups = [];
 
-    let sortedChunk = [...chunk].sort((a, b) => {
-        let idxA = globalPaperOrder.indexOf(a.paper);
-        let idxB = globalPaperOrder.indexOf(b.paper);
-        if(idxA !== idxB) return idxA - idxB;
-        
-        let pa = parseId(a.id), pb = parseId(b.id);
-        if (pa.prefix !== pb.prefix) return pa.prefix.localeCompare(pb.prefix);
-        return (pa.val || 0) - (pb.val || 0);
-    });
-
-    sortedChunk.forEach(item => {
+    // Use students in the exact order supplied by the uploaded Excel rows.
+    chunk.forEach(item => {
         let lastG = groups[groups.length - 1];
         let obj = parseId(item.id);
-        if (lastG && lastG.paper === item.paper && obj.prefix === lastG.lastObj.prefix && obj.val === lastG.lastObj.val + 1) {
+
+        if (lastG && lastG.paper === item.paper &&
+            obj.prefix === lastG.lastObj.prefix &&
+            Number.isFinite(obj.val) &&
+            obj.val === lastG.lastObj.val + 1) {
             lastG.ranges[lastG.ranges.length - 1].end = obj;
             lastG.lastObj = obj;
             lastG.count++;
         } else {
             if (!lastG || lastG.paper !== item.paper) {
-                groups.push({ paper: item.paper, ranges: [{start: obj, end: obj}], lastObj: obj, count: 1 });
+                groups.push({
+                    paper: item.paper,
+                    ranges: [{start: obj, end: obj}],
+                    lastObj: obj,
+                    count: 1
+                });
             } else {
                 lastG.ranges.push({start: obj, end: obj});
                 lastG.lastObj = obj;
@@ -1261,28 +1267,22 @@ function renderHallCard(chunk, num, date) {
     });
 
     groups.forEach(g => {
-        let prefixMap = {};
-        g.ranges.forEach(r => {
-            let pref = r.start.prefix || "NoPrefix";
-            if (!prefixMap[pref]) prefixMap[pref] = [];
-            if (r.start.num === r.end.num) {
-                prefixMap[pref].push(r.start.num);
-            } else {
-                prefixMap[pref].push(`${r.start.num}-${r.end.num.slice(-3)}`);
-            }
+        // Keep register-number segments in the same order as the Excel rows.
+        let lastDisplayedPrefix = null;
+        let cleanRangeSegments = g.ranges.map(r => {
+            const pref = r.start.prefix || "";
+            const numbers = r.start.num === r.end.num
+                ? r.start.num
+                : `${r.start.num}-${r.end.num.slice(-3)}`;
+
+            // Show an alphabet prefix only when it changes from the previous range.
+            const displayPrefix = pref && pref !== lastDisplayedPrefix ? pref : "";
+            lastDisplayedPrefix = pref;
+            return displayPrefix ? `<span>${displayPrefix}</span>${numbers}` : numbers;
         });
 
-        let cleanRangeSegments = [];
-        for (let pref in prefixMap) {
-            let joinedNumbers = prefixMap[pref].join(', ');
-            if (pref === "NoPrefix") {
-                cleanRangeSegments.push(joinedNumbers);
-            } else {
-                cleanRangeSegments.push(`<span>${pref}</span>${joinedNumbers}`);
-            }
-        }
         let rText = cleanRangeSegments.join(', ');
-        
+
         bodyHtml += `
             <div style="margin-bottom: 12px;">
                 <div class="paper-label">${g.paper} <span style="font-size:12px; text-decoration: none; font-weight:bold">   (Count: ${g.count})</span></div>
@@ -1496,23 +1496,10 @@ function renderMasterTable() {
 
         const roomName = roomNamesMap[hIdx + 1] || "";
 
-        let sortedChunk = [...chunk].sort((a, b) => {
-            let idxA = globalPaperOrder.indexOf(a.paper);
-            let idxB = globalPaperOrder.indexOf(b.paper);
-
-            if (idxA !== idxB) return idxA - idxB;
-
-            let pa = parseId(a.id), pb = parseId(b.id);
-
-            if (pa.prefix !== pb.prefix)
-                return pa.prefix.localeCompare(pb.prefix);
-
-            return (pa.val || 0) - (pb.val || 0);
-        });
-
         let subGroups = [];
 
-        sortedChunk.forEach(item => {
+        // Preserve the original order of rows within the hall.
+        chunk.forEach(item => {
 
             if (
                 subGroups.length === 0 ||
@@ -1618,21 +1605,8 @@ function renderSummaryTable() {
     processedHallsData.forEach((chunk, index) => {
         if (chunk.length === 0) return;
 
-        let sortedChunk = [...chunk].sort((a, b) => {
-            let idxA = globalPaperOrder.indexOf(a.paper);
-            let idxB = globalPaperOrder.indexOf(b.paper);
-
-            if (idxA !== idxB) return idxA - idxB;
-
-            let pa = parseId(a.id), pb = parseId(b.id);
-
-            if (pa.prefix !== pb.prefix)
-                return pa.prefix.localeCompare(pb.prefix);
-
-            return (pa.val || 0) - (pb.val || 0);
-        });
-
-        let idsInHall = sortedChunk.map(item => item.id);
+        // Use register numbers in their original Excel row order.
+        let idsInHall = chunk.map(item => item.id);
         let formattedRanges = formatRangesForMaster(idsInHall);
 
         // Get room name assigned to this hall
@@ -1913,44 +1887,40 @@ function renderAttendanceSheets() {
 function formatRangesForMaster(ids) {
     let ranges = [];
     let i = 0;
+    let lastDisplayedPrefix = null;
+
+    // Compress only adjacent consecutive numbers in the original Excel row order.
+    // Repeat the alphabet prefix only when it changes.
     while (i < ids.length) {
-        let start = parseId(ids[i]), last = start;
+        let start = parseId(ids[i]);
+        let last = start;
+
         while (i + 1 < ids.length) {
-            let next = parseId(ids[i+1]);
-            if (next.prefix === last.prefix && next.val === last.val + 1) { 
-                last = next; 
-                i++; 
+            let next = parseId(ids[i + 1]);
+
+            if (next.prefix === last.prefix &&
+                Number.isFinite(next.val) &&
+                Number.isFinite(last.val) &&
+                next.val === last.val + 1) {
+                last = next;
+                i++;
             } else {
                 break;
             }
         }
-        ranges.push({start, last}); 
+
+        const prefix = start.prefix || "";
+        const numberText = start.num === last.num
+            ? start.num
+            : `${start.num}-${last.num.slice(-3)}`;
+        const displayPrefix = prefix && prefix !== lastDisplayedPrefix ? prefix : "";
+
+        ranges.push(displayPrefix + numberText);
+        lastDisplayedPrefix = prefix;
         i++;
     }
-    
-    // Group elements by alphabet prefix to prevent repetition 
-    let masterPrefixMap = {};
-    ranges.forEach(r => {
-        let pref = r.start.prefix || "NoPrefix";
-        if (!masterPrefixMap[pref]) masterPrefixMap[pref] = [];
-        
-        if (r.start.num === r.last.num) {
-            masterPrefixMap[pref].push(r.start.num);
-        } else {
-            masterPrefixMap[pref].push(`${r.start.num}-${r.last.num.slice(-3)}`);
-        }
-    });
 
-    let masterOutputString = [];
-    for (let pref in masterPrefixMap) {
-        if (pref === "NoPrefix") {
-            masterOutputString.push(masterPrefixMap[pref].join(', '));
-        } else {
-            masterOutputString.push(`${pref}${masterPrefixMap[pref].join(', ')}`);
-        }
-    }
-    
-    return masterOutputString.join(', ');
+    return ranges.join(', ');
 }
 
 function renderStickers(list) {
@@ -2271,7 +2241,7 @@ const examDate = rawDate
                         ).length;
 
                     const positionCode =
-                        code +'&nbsp;'+ String(positionNumber).padStart(2, '0');
+                        code +'&nbsp;'+ String(positionNumber).padStart(2, '0')+'&nbsp;@6500/-';
 
                     return `
                         <tr>
